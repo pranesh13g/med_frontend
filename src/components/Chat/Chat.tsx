@@ -1,16 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { api } from '../../config/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { Send } from 'lucide-react';
 
-export const Chat = ({ doctorId, chatId: providedChatId }) => {
+interface Message {
+  id: string;
+  content: string;
+  created_at: string;
+  sender: {
+    id: string;
+    full_name: string;
+    role: string;
+  };
+}
+
+interface ChatProps {
+  doctorId?: string;
+  chatId?: string;
+}
+
+export const Chat = ({ doctorId, chatId: providedChatId }: ChatProps) => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [chatId, setChatId] = useState(null);
-  const [socket, setSocket] = useState(null);
-  const messagesEndRef = useRef(null);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!user || (!providedChatId && !doctorId)) {
@@ -18,8 +34,8 @@ export const Chat = ({ doctorId, chatId: providedChatId }) => {
     }
 
     let isMounted = true;
-    let socketInstance = null;
-    let activeChatId = null;
+    let socketInstance: Socket | null = null;
+    let activeChatId: string | null = null;
 
     const initChat = async () => {
       try {
@@ -54,7 +70,7 @@ export const Chat = ({ doctorId, chatId: providedChatId }) => {
           newSocket.emit('join_chat', activeChatId);
         };
 
-        const handleNewMessage = (message) => {
+        const handleNewMessage = (message: Message) => {
           if (!isMounted) {
             return;
           }
@@ -110,7 +126,7 @@ export const Chat = ({ doctorId, chatId: providedChatId }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -178,4 +194,3 @@ export const Chat = ({ doctorId, chatId: providedChatId }) => {
     </div>
   );
 };
-

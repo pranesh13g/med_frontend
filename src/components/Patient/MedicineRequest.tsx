@@ -2,8 +2,22 @@ import { useState, useEffect } from 'react';
 import { api } from '../../config/api';
 import { Plus, Clock, CheckCircle, XCircle, Truck, Package } from 'lucide-react';
 
-export const MedicineRequest = ({ doctorId }) => {
-  const [requests, setRequests] = useState([]);
+interface MedicineRequestType {
+  id: string;
+  medicine_name: string;
+  reason: string;
+  status: string;
+  doctor_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface MedicineRequestProps {
+  doctorId: string;
+}
+
+export const MedicineRequest = ({ doctorId }: MedicineRequestProps) => {
+  const [requests, setRequests] = useState<MedicineRequestType[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     medicine_name: '',
@@ -24,7 +38,7 @@ export const MedicineRequest = ({ doctorId }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -45,7 +59,7 @@ export const MedicineRequest = ({ doctorId }) => {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
         return <Clock className="w-5 h-5 text-yellow-500" />;
@@ -62,7 +76,7 @@ export const MedicineRequest = ({ doctorId }) => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
@@ -173,4 +187,3 @@ export const MedicineRequest = ({ doctorId }) => {
     </div>
   );
 };
-

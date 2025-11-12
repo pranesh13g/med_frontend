@@ -1,11 +1,28 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { api } from '../config/api';
 
-const AuthContext = createContext(undefined);
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'patient' | 'doctor' | 'medicine_company';
+  phone?: string;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, full_name: string, role: string, phone?: string) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,14 +44,14 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     const response = await api.post('/auth/login', { email, password });
     localStorage.setItem('token', response.token);
     setToken(response.token);
     setUser(response.user);
   };
 
-  const register = async (email, password, full_name, role, phone) => {
+  const register = async (email: string, password: string, full_name: string, role: string, phone?: string) => {
     const response = await api.post('/auth/register', { email, password, full_name, role, phone });
     localStorage.setItem('token', response.token);
     setToken(response.token);
@@ -61,4 +78,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

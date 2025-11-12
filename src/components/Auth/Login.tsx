@@ -2,14 +2,18 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogIn } from 'lucide-react';
 
-export const Login = ({ onToggle }) => {
+interface LoginProps {
+  onToggle: () => void;
+}
+
+export const Login = ({ onToggle }: LoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -84,4 +88,3 @@ export const Login = ({ onToggle }) => {
     </div>
   );
 };
-
