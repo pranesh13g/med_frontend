@@ -5,16 +5,10 @@ import { Chat } from '../Chat/Chat';
 import { MedicineRequest } from './MedicineRequest';
 import { MessageSquare, Pill, LogOut } from 'lucide-react';
 
-interface Doctor {
-  id: string;
-  full_name: string;
-  email: string;
-}
-
 export const PatientDashboard = () => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'chat' | 'medicines'>('chat');
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [activeTab, setActiveTab] = useState('chat');
+  const [doctor, setDoctor] = useState(null);
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -90,3 +84,4 @@ export const PatientDashboard = () => {
     </div>
   );
 };
+

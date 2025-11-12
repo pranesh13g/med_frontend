@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserPlus } from 'lucide-react';
 
-interface RegisterProps {
-  onToggle: () => void;
-}
-
-export const Register = ({ onToggle }: RegisterProps) => {
+export const Register = ({ onToggle }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,7 +14,7 @@ export const Register = ({ onToggle }: RegisterProps) => {
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -38,7 +34,7 @@ export const Register = ({ onToggle }: RegisterProps) => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -150,3 +146,4 @@ export const Register = ({ onToggle }: RegisterProps) => {
     </div>
   );
 };
+

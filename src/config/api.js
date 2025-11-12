@@ -3,10 +3,10 @@
  const API_URL = import.meta.env.VITE_API_URL || 'https://med-backend-sigma.vercel.app/api';
 
 export const api = {
-  async request(endpoint: string, options: RequestInit = {}) {
+  async request(endpoint, options = {}) {
     const token = localStorage.getItem('token');
 
-    const headers: HeadersInit = {
+    const headers = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
@@ -29,21 +29,22 @@ export const api = {
     return data;
   },
 
-  get(endpoint: string) {
+  get(endpoint) {
     return this.request(endpoint);
   },
 
-  post(endpoint: string, body: unknown) {
+  post(endpoint, body) {
     return this.request(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
     });
   },
 
-  patch(endpoint: string, body: unknown) {
+  patch(endpoint, body) {
     return this.request(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(body),
     });
   },
 };
+

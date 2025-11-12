@@ -3,30 +3,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../config/api';
 import { Package, LogOut, CheckCircle } from 'lucide-react';
 
-interface Prescription {
-  id: string;
-  medicine_name: string;
-  reason: string;
-  status: string;
-  doctor_notes?: string;
-  created_at: string;
-  updated_at: string;
-  patient: {
-    id: string;
-    full_name: string;
-    email: string;
-    phone?: string;
-  };
-  doctor: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
-}
-
 export const MedicineCompanyDashboard = () => {
   const { user, logout } = useAuth();
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [prescriptions, setPrescriptions] = useState([]);
 
   useEffect(() => {
     fetchPrescriptions();
@@ -41,7 +20,7 @@ export const MedicineCompanyDashboard = () => {
     }
   };
 
-  const handleUpdateStatus = async (prescriptionId: string, status: string) => {
+  const handleUpdateStatus = async (prescriptionId, status) => {
     try {
       await api.patch(`/medicines/requests/${prescriptionId}`, { status });
       fetchPrescriptions();
@@ -50,7 +29,7 @@ export const MedicineCompanyDashboard = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'approved':
         return 'bg-green-100 text-green-800';
@@ -194,3 +173,4 @@ export const MedicineCompanyDashboard = () => {
     </div>
   );
 };
+

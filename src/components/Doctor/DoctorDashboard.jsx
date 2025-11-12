@@ -4,35 +4,13 @@ import { api } from '../../config/api';
 import { Chat } from '../Chat/Chat';
 import { Users, Pill, LogOut, MessageSquare } from 'lucide-react';
 
-interface Patient {
-  id: string;
-  full_name: string;
-  email: string;
-  phone?: string;
-}
-
-interface MedicineRequestType {
-  id: string;
-  medicine_name: string;
-  reason: string;
-  status: string;
-  doctor_notes?: string;
-  created_at: string;
-  patient: {
-    id: string;
-    full_name: string;
-    email: string;
-    phone?: string;
-  };
-}
-
 export const DoctorDashboard = () => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'patients' | 'requests'>('patients');
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [requests, setRequests] = useState<MedicineRequestType[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('patients');
+  const [patients, setPatients] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedChatId, setSelectedChatId] = useState(null);
 
   useEffect(() => {
     fetchPatients();
@@ -47,7 +25,7 @@ export const DoctorDashboard = () => {
       }
       try {
         const chats = await api.get('/chats');
-        const chatForPatient = (chats as any[]).find((c) => c.patient?.id === selectedPatient.id);
+        const chatForPatient = chats.find((c) => c.patient?.id === selectedPatient.id);
         setSelectedChatId(chatForPatient ? chatForPatient.id : null);
       } catch (error) {
         console.error('Failed to fetch chats:', error);
@@ -75,7 +53,7 @@ export const DoctorDashboard = () => {
     }
   };
 
-  const handleUpdateRequest = async (requestId: string, status: string, notes?: string) => {
+  const handleUpdateRequest = async (requestId, status, notes) => {
     try {
       await api.patch(`/medicines/requests/${requestId}`, {
         status,
@@ -275,3 +253,4 @@ export const DoctorDashboard = () => {
     </div>
   );
 };
+
