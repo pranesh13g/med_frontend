@@ -29,49 +29,81 @@ export const Chat = ({ doctorId, chatId: providedChatId }: ChatProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!user || (!providedChatId && !doctorId)) {
+      return;
+    }
+
+    let isMounted = true;
+    let socketInstance: Socket | null = null;
+    let activeChatId: string | null = null;
+
     const initChat = async () => {
       try {
-        // If a chatId is provided (doctor view), use it directly; otherwise create/find via doctorId (patient view)
-        let activeChatId = providedChatId;
+        activeChatId = providedChatId ?? null;
+
         if (!activeChatId) {
           if (!doctorId) {
             return;
           }
+
           const chat = await api.post('/chats', { doctor_id: doctorId });
           activeChatId = chat.id;
         }
+
+        if (!activeChatId || !isMounted) {
+          return;
+        }
+
         setChatId(activeChatId);
 
         const messagesData = await api.get(`/chats/${activeChatId}/messages`);
-        setMessages(messagesData);
+        if (isMounted) {
+          setMessages(messagesData);
+        }
 
         const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
         const newSocket = io(SOCKET_URL);
+        socketInstance = newSocket;
 
-        newSocket.on('connect', () => {
-          newSocket.emit('register', user?.id);
-          if (activeChatId) {
-            newSocket.emit('join_chat', activeChatId);
-          }
-        });
-
-        newSocket.on('new_message', (message: Message) => {
-          setMessages((prev) => [...prev, message]);
-        });
-
-        setSocket(newSocket);
-
-        return () => {
-          newSocket.close();
+        const handleConnect = () => {
+          newSocket.emit('register', user.id);
+          newSocket.emit('join_chat', activeChatId);
         };
+
+        const handleNewMessage = (message: Message) => {
+          if (!isMounted) {
+            return;
+          }
+
+          setMessages((prev) => {
+            if (prev.some((existing) => existing.id === message.id)) {
+              return prev;
+            }
+            return [...prev, message];
+          });
+        };
+
+        newSocket.on('connect', handleConnect);
+        newSocket.on('new_message', handleNewMessage);
+
+        if (isMounted) {
+          setSocket(newSocket);
+        }
       } catch (error) {
         console.error('Failed to initialize chat:', error);
       }
     };
 
-    if (user && (providedChatId || doctorId)) {
-      initChat();
-    }
+    initChat();
+
+    return () => {
+      isMounted = false;
+      if (socketInstance) {
+        socketInstance.off('connect');
+        socketInstance.off('new_message');
+        socketInstance.disconnect();
+      }
+    };
   }, [user, doctorId, providedChatId]);
 
   useEffect(() => {
