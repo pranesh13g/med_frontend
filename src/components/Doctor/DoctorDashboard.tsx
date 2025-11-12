@@ -47,8 +47,20 @@ export const DoctorDashboard = () => {
       }
       try {
         const chats = await api.get('/chats');
-        const chatForPatient = (chats as any[]).find((c) => c.patient?.id === selectedPatient.id);
-        setSelectedChatId(chatForPatient ? chatForPatient.id : null);
+        const chatForPatient = (chats as any[]).find((c) => String(c.patient?.id) === String(selectedPatient.id));
+        
+        if (chatForPatient) {
+          setSelectedChatId(chatForPatient.id);
+        } else {
+          // If no chat exists, create one for the doctor
+          try {
+            const newChat = await api.post('/chats', { patient_id: selectedPatient.id });
+            setSelectedChatId(newChat.id);
+          } catch (createError) {
+            console.error('Failed to create chat:', createError);
+            setSelectedChatId(null);
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch chats:', error);
         setSelectedChatId(null);
