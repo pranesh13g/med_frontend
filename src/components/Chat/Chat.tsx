@@ -141,31 +141,32 @@ export const Chat = ({ doctorId, chatId: providedChatId }: ChatProps) => {
             No messages yet. Start the conversation!
           </div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
-            >
+          messages.map((message) => {
+            const isOwnMessage = message.sender.id === user?.id;
+
+            return (
               <div
-                className={`max-w-[70%] rounded-lg px-4 py-3 ${
-                  message.sender.id === user?.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-900 border border-gray-200'
-                }`}
+                key={message.id}
+                className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
               >
-                <p className="text-xs font-medium mb-1 opacity-75">
-                  {message.sender.full_name}
-                </p>
-                <p className="break-words">{message.content}</p>
-                <p className="text-xs mt-1 opacity-75">
-                  {new Date(message.created_at).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
+                <div
+                  className={`max-w-[70%] rounded-lg px-4 py-3 ${
+                    isOwnMessage
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-900 border border-gray-200'
+                  }`}
+                >
+                  <p className="break-words">{message.content}</p>
+                  <p className="text-xs mt-1 opacity-75">
+                    {new Date(message.created_at).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>
