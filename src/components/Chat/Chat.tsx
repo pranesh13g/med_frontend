@@ -172,19 +172,19 @@ export const Chat = ({ doctorId, chatId: providedChatId }: ChatProps) => {
       </div>
 
       <div className="border-t border-gray-200 p-4 bg-white rounded-b-lg">
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleSend}
             disabled={!newMessage.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-base text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <Send className="w-5 h-5" />
             Send
